@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "N": 817,
+    "seed": 42,
+    "theta_D": 0.38,
+    "theta_E": 0.468,
+    "warning": "Simulated distributions — not validated on real logits"
+  },
+  "baseline": {
+    "covered_precision": 0.542,
+    "coverage": 1.0,
+    "hallucination_rate": 0.458
+  },
+  "DED_OFF": {
+    "covered_precision": 0.779,
+    "coverage": 0.548,
+    "hallucination_rate": 0.121
+  },
+  "DED_ON": {
+    "covered_precision": 0.760,
+    "coverage": 0.694,
+    "hallucination_rate": 0.166
+  },
+  "auc_roc": 0.851,
+  "ablation": {
+    "hallucination_reduction_vs_baseline": "-76.5%",
+    "coverage_gain_ON_vs_OFF": "+14.6pp",
+    "covered_precision_ON_vs_OFF": "-1.9pp"
+  }
+}
