@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+type: software
+title: "DED Mémoriel Filter: Selective Inference Without Fine-Tuning"
+authors:
+  - family-names: Renno
+    given-names: François
+    affiliation: "Synoptisme Research Initiative"
+    country: TH
+repository-code: "https://github.com/HarmoIA/DED-memoriel"
+url: "https://github.com/HarmoIA/DED-memoriel"
+license: MIT
+version: "1.0.0-simulation"
+date-released: "2026-06-06"
+year: 2026
+keywords:
+  - hallucination
+  - selective inference
+  - entropy
+  - LLM
+  - abstention
+  - no fine-tuning
+abstract: >
+  DED (Differentiated-Equalized-Re-differentiated) is a lightweight
+  inference wrapper that uses Shannon entropy over top-k logits to
+  detect uncertainty and trigger structured abstention in LLMs —
+  without fine-tuning or external retrieval.
+notes: >
+  Preliminary results based on simulated distributions
+  (TruthfulQA N=817). GPU validation on Mistral-7B-Instruct-v0.3
+  in progress.
