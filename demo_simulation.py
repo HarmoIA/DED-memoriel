@@ -105,11 +105,10 @@ print("   These values are based on calibrated simulated distributions.")
 print("   They are not validated on real logits.")
 print("   Real-logit validation on Mistral-7B-Instruct-v0.3 is planned.\n")
 
-# ── Save results/simulation_results.json ─────────────────────────────────
-os.makedirs("results", exist_ok=True)
-
-with open("results/simulation_results.json", "w", encoding="utf-8") as f:
+# ── Save simulation_results.json ─────────────────────────────────────────
+with open("simulation_results.json", "w", encoding="utf-8") as f:
     json.dump(results, f, indent=2, ensure_ascii=False)
 
-print("✅ results/simulation_results.json saved.")
+print("✅ simulation_results.json saved.")
 print("=" * 68)
+
