@@ -2,9 +2,10 @@
   "meta": {
     "N": 817,
     "seed": 42,
-    "theta_D": 0.38,
-    "theta_E": 0.468,
-    "warning": "Simulated distributions — not validated on real logits"
+    "model_assumption": "Mistral-7B-Instruct-v0.3",
+    "dataset_assumption": "TruthfulQA",
+    "status": "preliminary_simulation_not_real_logits",
+    "warning": "Calibrated simulated distributions — not validated on real logits"
   },
   "baseline": {
     "covered_precision": 0.542,
@@ -17,16 +18,14 @@
     "hallucination_rate": 0.121
   },
   "DED_ON": {
-    "covered_precision": 0.760,
+    "covered_precision": 0.76,
     "coverage": 0.694,
     "hallucination_rate": 0.166
   },
-  "auc_roc": 0.851,
   "ablation": {
-    "hallucination_reduction_vs_baseline": "-73.6%",
-    "coverage_gain_ON_vs_OFF": "+14.6pp",
-    "covered_precision_ON_vs_OFF": "-1.9pp"
-  }
+    "hallucination_reduction_vs_baseline_OFF": -0.736,
+    "coverage_gain_cycle_memory_pp": 14.6,
+    "covered_precision_change_OFF_to_ON": "77.9% -> 76.0%"
+  },
+  "auc_roc_entropy_signal": 0.851
 }
-
-
