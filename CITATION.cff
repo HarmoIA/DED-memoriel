@@ -31,3 +31,4 @@ notes: >
   using TruthfulQA N=817 assumptions. These results do not yet constitute
   experimental validation on real logits. Real-logit validation on
   Mistral-7B-Instruct-v0.3 is planned.
+docs: refine citation metadata
