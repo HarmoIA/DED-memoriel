@@ -1,4 +1,4 @@
-# DED Mémoriel Filter
+ DED Mémoriel Filter
 
 **Selective inference without fine-tuning.**
 
@@ -212,6 +212,6 @@ DED-memoriel/
 
 **François Renno**  
 Synoptisme Research Initiative  
-Thailand / Montréal, 2026  
+Thailand, 2026  
 
 Independent researcher — open to critical review.
