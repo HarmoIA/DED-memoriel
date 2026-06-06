@@ -12,20 +12,22 @@ url: "https://github.com/HarmoIA/DED-memoriel"
 license: MIT
 version: "1.0.0-simulation"
 date-released: "2026-06-06"
-year: 2026
 keywords:
   - hallucination
   - selective inference
   - entropy
   - LLM
   - abstention
+  - uncertainty routing
   - no fine-tuning
+  - simulation
 abstract: >
-  DED (Differentiated-Equalized-Re-differentiated) is a lightweight
-  inference wrapper that uses Shannon entropy over top-k logits to
-  detect uncertainty and trigger structured abstention in LLMs —
-  without fine-tuning or external retrieval.
+  DED Mémoriel Filter is a lightweight inference wrapper that transforms
+  entropy signals from LLM logits into structured selective-inference
+  and abstention decisions. The method is designed to operate without
+  fine-tuning, external retrieval, or model-weight modification.
 notes: >
-  Preliminary results based on simulated distributions
-  (TruthfulQA N=817). GPU validation on Mistral-7B-Instruct-v0.3
-  in progress.
+  Preliminary results are based on calibrated simulated distributions
+  using TruthfulQA N=817 assumptions. These results do not yet constitute
+  experimental validation on real logits. Real-logit validation on
+  Mistral-7B-Instruct-v0.3 is planned.
