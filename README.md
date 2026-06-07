@@ -2,6 +2,10 @@
 
 **Selective inference without fine-tuning.**
 
+In this preliminary simulation, “hallucination” denotes an incorrect generated answer under the TruthfulQA-inspired binary correctness setting. 
+It should be interpreted as a proxy, not as a full hallucination taxonomy.
+
+
 A lightweight wrapper that transforms entropy signals from LLM logits into structured abstention decisions.
 
 ![License: AGPLv3](https://img.shields.io/badge/License-AGPLv3-blue.svg)
