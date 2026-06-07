@@ -4,7 +4,7 @@
 
 DED Mémoriel Filter is a lightweight software prototype for entropy-based selective inference in large language models. It transforms uncertainty signals derived from logits into structured decisions to **generate**, **abstain**, or **generate cautiously**.
 
-This release is an **alpha proof of concept**. Current results are based on calibrated simulated distributions and are intended to motivate real-logit validation, not to establish final empirical performance.
+This release is an **alpha proof of concept**. Current results are based on controlled tests and simulated distributions. They are intended to validate the internal behavior of the prototype and motivate real-logit validation, not to establish final empirical performance.
 
 ![License: AGPLv3](https://img.shields.io/badge/License-AGPLv3-blue.svg)
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)
@@ -27,16 +27,23 @@ The project is designed as a wrapper around model logits rather than as a new la
 
 ## Status
 
-Results in this repository are **preliminary** and derived from calibrated simulated distributions.
+Results in this repository are **preliminary**.
 
-Reference setting:
+They currently come from:
+
+- functional tests on random logits;
+- structured tests on controlled probability distributions;
+- simulated behavioral validation;
+- calibrated simulated distributions inspired by TruthfulQA-like correctness settings.
+
+They do **not** yet constitute experimental validation on real LLM logits.
+
+Reference simulation setting:
 
 - Model reference: `Mistral-7B-Instruct-v0.3`
 - Dataset reference: `TruthfulQA`
 - Sample size: `N = 817`
 - Seed: `42`
-
-These results do **not** yet constitute experimental validation on real model logits.
 
 Real-logit GPU calibration is the next validation step.
 
@@ -60,6 +67,35 @@ The goal is not to make the model intrinsically more truthful, but to reduce uns
 
 ---
 
+## Routing logic
+
+The simplified routing rule is:
+
+```text
+if bimodal_conflict:
+    phase = É
+elif H > θ_É:
+    phase = É
+elif H < θ_D:
+    phase = D
+elif θ_D <= H <= θ_É and cycle_memory_active:
+    phase = R
+else:
+    phase = É
+```
+
+Default parameters:
+
+| Parameter | Default value | Role |
+|:---|---:|:---|
+| `θ_D` | `0.38` | Low-entropy threshold for Phase D |
+| `θ_É` | `0.74` | High-entropy threshold for Phase É |
+| `top_k` | `50` | Number of top tokens used for entropy |
+| `bimodal_gap` | `0.15` | Maximum gap between top-1 and top-2 for bimodality |
+| `bimodal_min_prob` | `0.25` | Minimum probability of top-2 for bimodality |
+
+---
+
 ## Design principles
 
 - **No fine-tuning**
@@ -67,7 +103,7 @@ The goal is not to make the model intrinsically more truthful, but to reduce uns
 - **No external retrieval requirement**
 - **Low computational overhead**
 - **Transparent abstention mechanism**
-- **Compatible with any model exposing logits or token probabilities**
+- **Compatible with models exposing logits or token probabilities**
 
 ---
 
@@ -81,7 +117,145 @@ The effect of `CycleMemory` remains preliminary and must be validated on real lo
 
 ---
 
-## Preliminary simulation results
+## Validation status
+
+Three preliminary validation layers are currently available.
+
+| Validation layer | Description | Result |
+|:---|:---|:---|
+| Random-logit functional test | Verifies that raw random logits are accepted, converted to probabilities, routed through entropy computation, and suspended under high entropy. | Passed |
+| Structured distribution tests | Validates the five main routing branches: peaked, diffuse, intermediate without memory, intermediate with memory, and bimodal. | 5/5 passed |
+| Simulated behavioral validation | Simulates 110 cases across factual, risky myth, ambiguous, and ethical/paradoxical categories. | Passed in simulation |
+
+These tests validate the internal logic and simulated behavior of the DED prototype. They do **not** yet establish empirical performance on real LLM logits.
+
+---
+
+## Functional test on random logits
+
+A first low-level test was conducted on a random logit vector of dimension 32,000:
+
+```python
+logits = np.random.randn(32000)
+```
+
+With `seed = 42`, the detector returned:
+
+```text
+phase = Phase.E
+H = 0.9821914460058359
+suspension_reason = ENTROPIE_HAUTE
+```
+
+This confirms that the detector:
+
+- accepts raw logits;
+- converts logits to probabilities;
+- extracts the top-k tokens;
+- computes normalized Shannon entropy;
+- applies the high-entropy suspension rule;
+- returns usable metadata.
+
+Ten repeated runs on random logits all produced Phase É with high entropy, which is expected for diffuse random distributions.
+
+---
+
+## Structured functional validation
+
+A structured validation was conducted on five controlled probability distributions.
+
+| Scenario | Expected phase | Obtained phase | Status |
+|:---|:---:|:---:|:---:|
+| Strongly peaked distribution | D | D | Passed |
+| Diffuse distribution | É | É | Passed |
+| Intermediate distribution without memory | É | É | Passed |
+| Intermediate distribution with active memory | R | R | Passed |
+| Bimodal distribution | É | É | Passed |
+
+Result:
+
+```text
+5/5 tests passed
+```
+
+The structured validation confirms the main routing branches:
+
+```text
+low entropy → Phase D
+high entropy → Phase É
+intermediate entropy without memory → Phase É
+intermediate entropy with memory → Phase R
+bimodal conflict → Phase É
+```
+
+The bimodal case is particularly important: the system can suspend even when global entropy is not extremely high, if two competing tokens dominate the distribution.
+
+Example:
+
+```text
+H = 0.3812
+top1 = 0.4600
+top2 = 0.4100
+phase = É
+reason = PARADOXE_STRUCTUREL
+```
+
+This validates the structural-conflict rule independently of global entropy alone.
+
+---
+
+## Simulated behavioral validation
+
+An advanced simulated behavioral validation was conducted on 110 cases distributed across four categories:
+
+| Category | Cases | Intended behavior |
+|:---|---:|:---|
+| `FACTUAL_SIMPLE` | 30 | Generate |
+| `RISKY_MYTH` | 30 | Suspend |
+| `AMBIGUOUS` | 25 | Re-differentiate when memory is active |
+| `ETHICAL_PARADOX` | 25 | Suspend under structural conflict |
+
+Global results:
+
+| Metric | Value |
+|:---|---:|
+| Total cases | 110 |
+| Generations | 63 |
+| Suspensions | 47 |
+| Coverage | 57.3% |
+| Suspension rate | 42.7% |
+| Mean entropy | 0.5749 |
+| Simulated covered precision | 87.3% |
+| Simulated hallucination proxy among generations | 12.7% |
+| Useful suspension rate | 87.2% |
+| False suspension rate | 12.8% |
+
+Phase distribution:
+
+| Phase | Count | Share |
+|:---|---:|---:|
+| D — Differentiated | 24 | 21.8% |
+| É — Equalized | 47 | 42.7% |
+| R — Re-differentiated | 39 | 35.5% |
+
+Coverage by category:
+
+| Category | Coverage |
+|:---|---:|
+| `FACTUAL_SIMPLE` | 100.0% |
+| `AMBIGUOUS` | 76.0% |
+| `RISKY_MYTH` | 26.7% |
+| `ETHICAL_PARADOX` | 24.0% |
+
+Interpretation:
+
+> In simulation, DED preserves generation on simple factual cases, suspends most risky or paradoxical cases, and routes ambiguous cases toward Phase R when memory is active.
+
+These results support the behavioral plausibility of the routing mechanism, but remain simulation-based.
+
+---
+
+## Preliminary simulation results — TruthfulQA-inspired setting
 
 The following results are simulation-based only and should be interpreted as proof of concept.
 
@@ -160,7 +334,7 @@ pip install numpy scikit-learn
 
 ---
 
-## Minimal usage with real logits
+## Minimal usage with logits or probabilities
 
 ```python
 from DED_core import DEDPhaseDetector, CycleMemory, Phase
@@ -186,7 +360,7 @@ memory.record(
 )
 ```
 
-`probs` should represent token probabilities derived from model logits, typically over a top-k token subset.
+`probs` may represent token probabilities derived from model logits, typically over a top-k token subset. Depending on the implementation path, raw logits may also be accepted and internally normalized.
 
 ---
 
@@ -203,6 +377,16 @@ DED-memoriel/
 ├── LICENSE
 ├── NOTICE
 └── README.md
+```
+
+Recommended future structure:
+
+```text
+DED-memoriel/
+├── reports/
+│   ├── 2026-06-06_functional_random_logits_test.md
+│   ├── 2026-06-06_structured_functional_validation.md
+│   └── 2026-06-06_simulated_behavioral_validation.md
 ```
 
 ---
@@ -226,17 +410,24 @@ DED-memoriel/
 - RAG and RLHF values are contextual references, not same-protocol baselines.
 - CycleMemory gain remains to be validated on real logits.
 - Entropy alone may be an incomplete uncertainty signal.
+- Some real hallucinations may occur with low entropy and high apparent model confidence.
+- Current behavioral validation uses simulated outcomes, not human annotations.
 
 ---
 
 ## Validation roadmap
 
 - [x] Core implementation: `DEDPhaseDetector` + `CycleMemory`
+- [x] Functional test on random logits
+- [x] Structured tests of the five routing branches
+- [x] Simulated behavioral validation on 110 cases
 - [x] Simulation with `N = 817`
 - [x] OFF / ON ablation
 - [x] Technical FAQ
 - [x] Validation plan
+- [ ] Convert validation reports to Markdown and add them under `reports/`
 - [ ] GPU calibration on real Mistral-7B logits
+- [ ] Real-logit validation on `Phi-3-mini-4k-instruct`
 - [ ] Risk-coverage curves
 - [ ] Selective risk analysis
 - [ ] Calibration curves
@@ -255,7 +446,8 @@ This project is intended for:
 - uncertainty-aware LLM wrappers;
 - hallucination mitigation studies;
 - lightweight safety mechanisms for LLM deployments;
-- reproducible evaluation of entropy-based routing.
+- reproducible evaluation of entropy-based routing;
+- exploration of risk-coverage trade-offs in generative models.
 
 It should not be used as a validated safety guarantee in high-stakes settings without further empirical validation.
 
@@ -272,7 +464,7 @@ If you use this repository, please cite:
   year      = {2026},
   publisher = {GitHub},
   url       = {https://github.com/HarmoIA/DED-memoriel},
-  note      = {Alpha software release; preliminary simulation on TruthfulQA-inspired setting, N=817; licensed under GNU AGPLv3}
+  note      = {Alpha software release; functional validation and preliminary simulation on TruthfulQA-inspired setting, N=817; licensed under GNU AGPLv3}
 }
 ```
 
