@@ -221,4 +221,14 @@ Earlier public commits of this repository were released under the MIT License. F
 
 See the [`LICENSE`](LICENSE) file for the full license text.
 
+Copyright (C) 2026 François Reynaud / François Renno.
+
+---
+
+**François Renno**  
+Synoptisme Research Initiative  
+Thailand, 2026  
+
+Independent researcher — open to critical review.
+
 Copyright (C)
