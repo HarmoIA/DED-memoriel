@@ -231,4 +231,4 @@ Thailand, 2026
 
 Independent researcher — open to critical review.
 
-Copyright (C)
+
