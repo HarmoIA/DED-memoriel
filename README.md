@@ -1,10 +1,10 @@
- DED Mémoriel Filter
+# DED Mémoriel Filter
 
 **Selective inference without fine-tuning.**
 
 A lightweight wrapper that transforms entropy signals from LLM logits into structured abstention decisions.
 
-![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+![License: AGPLv3](https://img.shields.io/badge/License-AGPLv3-blue.svg)
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)
 ![Fine-tuning](https://img.shields.io/badge/Fine--tuning-No-orange.svg)
 ![Status](https://img.shields.io/badge/Status-Preliminary-yellow.svg)
@@ -154,6 +154,7 @@ DED-memoriel/
 ├── VALIDATION_PLAN.md
 ├── CITATION.cff
 ├── LICENSE
+├── NOTICE
 └── README.md
 ```
 
@@ -204,14 +205,20 @@ DED-memoriel/
   year      = {2026},
   publisher = {GitHub},
   url       = {https://github.com/HarmoIA/DED-memoriel},
-  note      = {Preliminary results — simulation on TruthfulQA N=817}
+  note      = {Preliminary results — simulation on TruthfulQA N=817; licensed under GNU AGPLv3}
 }
 ```
 
 ---
 
-**François Renno**  
-Synoptisme Research Initiative  
-Thailand, 2026  
+## License
 
-Independent researcher — open to critical review.
+From version `v0.1.0-alpha` onward, **DED Mémoriel Filter** is licensed under the **GNU Affero General Public License v3.0**.
+
+This license was chosen to preserve openness for modified versions, including networked/API-based deployments.
+
+Earlier public commits of this repository were released under the MIT License. From `v0.1.0-alpha` onward, the project is licensed under AGPLv3.
+
+See the [`LICENSE`](LICENSE) file for the full license text.
+
+Copyright (C)
